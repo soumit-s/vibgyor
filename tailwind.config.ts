@@ -8,10 +8,17 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-conic":
-          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+      fontFamily: {
+        "ink-free": "'Ink Free', sans",
+        kalam: "Kalam, sans",
+        "shadow-into-light-two": "'Shadow Into Light Two', sans",
+      },
+      colors: {
+        primary: "var(--primary)",
+        secondary: "var(--secondary)",
+        background: "var(--background)",
+        foreground: "var(--foreground)",
+        outline: "var(--outline)",
       },
     },
   },

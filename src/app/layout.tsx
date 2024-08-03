@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Kalam, Shadows_Into_Light_Two } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+const kalam = Kalam({ subsets: ["latin"], weight: ["300", "400", "700"] });
+const shadowIntoLightTwo = Shadows_Into_Light_Two({
+  subsets: ["latin"],
+  weight: ["400"],
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -16,7 +20,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={`${kalam.className} ${shadowIntoLightTwo.className}`}>
+        {children}
+      </body>
     </html>
   );
 }
