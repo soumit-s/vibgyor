@@ -10,10 +10,12 @@
   },
   "dependencies": {
     "@monaco-editor/react": "^4.6.0",
+    "konva": "^9.3.14",
     "monaco-editor": "^0.50.0",
     "next": "14.2.5",
     "react": "^18",
     "react-dom": "^18",
+    "react-konva": "^18.2.10",
     "tailwind-merge": "^2.4.0"
   },
   "devDependencies": {
