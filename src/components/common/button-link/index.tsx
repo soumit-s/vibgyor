@@ -27,7 +27,7 @@ const ButtonLink = ({
 };
 
 function getStyleFromVariant(variant: ButtonVariant): string {
-  const common = "py-2 px-4 rounded-md transition";
+  const common = "py-2 px-4 rounded-md transition grid items-center";
   switch (variant) {
     case "filled":
       return twMerge(
