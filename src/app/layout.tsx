@@ -1,11 +1,35 @@
 import type { Metadata } from "next";
-import { Kalam, Shadows_Into_Light_Two } from "next/font/google";
+import {
+  Figtree,
+  Kalam,
+  Shadows_Into_Light_Two,
+  Work_Sans,
+  Albert_Sans,
+  Inter,
+} from "next/font/google";
 import "./globals.css";
+import { twMerge } from "tailwind-merge";
 
-const kalam = Kalam({ subsets: ["latin"], weight: ["300", "400", "700"] });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const workSans = Work_Sans({
+  subsets: ["latin"],
+  variable: "--font-work-sans",
+});
+const kalam = Kalam({
+  subsets: ["latin"],
+  weight: ["300", "400", "700"],
+  variable: "--font-kalam",
+});
 const shadowIntoLightTwo = Shadows_Into_Light_Two({
   subsets: ["latin"],
   weight: ["400"],
+  variable: "--font-shadow-into-light-two",
+});
+
+const figTree = Figtree({ subsets: ["latin"], variable: "--font-figtree" });
+const albertSans = Albert_Sans({
+  subsets: ["latin"],
+  variable: "--font-albert-sans",
 });
 
 export const metadata: Metadata = {
@@ -20,7 +44,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${kalam.className} ${shadowIntoLightTwo.className}`}>
+      <body
+        className={twMerge(
+          inter.variable,
+          albertSans.variable,
+          kalam.variable,
+          shadowIntoLightTwo.variable,
+          workSans.variable,
+          figTree.variable,
+          "font-handwriting"
+        )}
+      >
         {children}
       </body>
     </html>

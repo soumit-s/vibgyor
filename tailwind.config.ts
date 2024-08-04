@@ -9,9 +9,13 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
+        inter: ["var(--font-inter)", "sans"],
         "ink-free": "'Ink Free', sans",
-        kalam: "Kalam, sans",
-        "shadow-into-light-two": "'Shadow Into Light Two', sans",
+        kalam: ["var(--font-kalam)", "sans"],
+        "shadow-into-light-two": ["var(--font-shadow-into-light-two)", "sans"],
+        "work-sans": ["var(--font-work-sans)", "sans"],
+        figtree: ["var(--font-figtree)", "sans"],
+        "albert-sans": ["var(--font-albert-sans)", "sans"],
       },
       colors: {
         primary: "var(--primary)",

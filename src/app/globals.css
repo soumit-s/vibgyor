@@ -3,8 +3,38 @@
 @tailwind utilities;
 
 :root {
-  --background: #1A1919;
-  --foreground: #97afa5;
+  --background: #050c09;
+  --foreground: #b6c9c2;
   --outline: #212b26;
+  --outline-bright: #303331;
   --primary: #0b0f0d;
+  --secondary: #6737c2;
+
+  @apply text-foreground text-sm;
+}
+
+@layer base {
+  .font-common {
+    @apply font-inter tracking-normal;
+  }
+
+  .font-handwriting {
+    @apply font-shadow-into-light-two tracking-widest;
+  }
+}
+
+@layer utilities {
+  .black-shadow {
+    @apply shadow-lg shadow-black/50;
+  }
+}
+
+@layer components {
+  .navbar-link {
+    @apply relative before:content-[""] before:bg-foreground before:absolute before:z-10 before:top-0 before:bottom-0 before:-left-[10%] before:w-0 hover:before:w-[120%] hover:cursor-pointer before:transition-all before:mix-blend-difference;
+  }
+
+  hr {
+    @apply border-outline;
+  }
 }
