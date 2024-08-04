@@ -1,24 +1,28 @@
+"use client"
 import { twMerge } from "tailwind-merge";
 
 type ButtonVariant = "filled" | "hollow";
 
-interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface Props extends React.HTMLAttributes<HTMLAnchorElement> {
   variant: ButtonVariant;
+  href?: string;
 }
 
-const Button = ({
+const ButtonLink = ({
   className,
   variant,
   children,
+  href,
   ...props
 }: React.PropsWithChildren<Props>) => {
-  return (
-    <button
+  return (    
+    <a
       className={twMerge(getStyleFromVariant(variant), className)}
+      href={href}
       {...props}
     >
       {children}
-    </button>
+    </a>
   );
 };
 
@@ -32,8 +36,8 @@ function getStyleFromVariant(variant: ButtonVariant): string {
       );
     default:
     case "hollow":
-      return twMerge(common, "bg-primary border border-outline hover:bg-outline");
+      return twMerge(common, "border border-outline hover:bg-outline");
   }
 }
 
-export default Button;
+export default ButtonLink;
