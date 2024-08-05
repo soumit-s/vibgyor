@@ -20,7 +20,7 @@ const TextBox = ({
   ...props
 }: Props) => (
   <div>
-    <div className="mb-2">{label}</div>
+    {label && <div className="mb-2">{label}</div> }
     <input
       type={type}
       placeholder={placeholder}
