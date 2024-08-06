@@ -35,7 +35,8 @@ const TextBox = ({
     {msg && (
       <div
         className={twMerge(
-          msgType === "error" && "text-red-800",
+          "mt-2 text-sm",
+          msgType === "error" && "text-neutral-600",
           msgType === "warning" && "text-yellow-500"
         )}
       >
