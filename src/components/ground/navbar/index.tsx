@@ -8,7 +8,7 @@ interface Props {
 }
 
 const NavigationBar = (props: Props) => (
-  <nav className="rounded-lg flex items-center justify-between relative pt-4 p-2">
+  <nav className="rounded-lg flex items-center justify-between relative pt-4 px-8">
     <LogoMenu />
     <div className="absolute top-0 left-0 right-0 h-2 flex justify-center items-start bg-secondary">
       <span className="py-2 px-4 bg-outline rounded-b outline-2 outline outline-secondary font-handwriting black-shadow bg-secondary relative z-[99999]">
