@@ -68,20 +68,44 @@ const Entity = ({ entityId }: Props) => {
       });
 
       let fieldY = fieldsRect.getPosition().y + 5;
-      const elements = entityFields.map((field) => {
-        const fieldGroup = new Konva.Group({ x: 0, fieldY });
-        const fieldName = new Konva.Text({
-          x: 10,
-          y: fieldY + 5,
-          text: field.name,
-          fill: theme.fieldColor,
-          fontFamily: theme.fontFamily,
-          fontSize: theme.fontSize,
+      let maxFieldWidth = entityWidth;
+      const elements = entityFields
+        .map((field) => {
+          const fieldName = new Konva.Text({
+            x: 10,
+            y: fieldY + 5,
+            text: field.name,
+            fill: theme.fieldColor,
+            fontFamily: theme.fontFamily,
+            fontSize: theme.fontSize,
+          });
+          const fieldType = new Konva.Text({
+            x: fieldName.getPosition().x + fieldName.getWidth() + 10,
+            y: fieldY + 5,
+            text: field.type,
+            fill: theme.fieldColor,
+            fontFamily: theme.fontFamily,
+            fontSize: theme.fontSize,
+          });
+          fieldY += 2 * 5 + fieldName.getHeight();
+          const finalWidth =
+            fieldType.getPosition().x + fieldType.getWidth() + 10; // +10 for padding.
+          maxFieldWidth =
+            maxFieldWidth < finalWidth ? finalWidth : maxFieldWidth;
+          return { fieldName, fieldType };
+        })
+        .map(({ fieldName, fieldType }) => {
+          const fieldGroup = new Konva.Group({ x: 0, fieldY });
+
+          // Left align the field type.
+          fieldType.setPosition({
+            x: maxFieldWidth - 10 - fieldType.getWidth(),
+            y: fieldType.getPosition().y,
+          });
+
+          fieldGroup.add(fieldName, fieldType);
+          return fieldGroup;
         });
-        fieldY += 2 * 5 + fieldName.getHeight();
-        fieldGroup.add(fieldName);
-        return fieldGroup;
-      });
 
       // Set the height of the field rect using the final value of
       // fieldY. Also, takes into account the padding.
