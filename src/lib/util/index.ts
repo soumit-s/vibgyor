@@ -1,3 +1,4 @@
+import { Parser } from "@dbml/core";
 import { Diagram, Entity, getLocalDb } from "../db";
 
 export function generateSlugFromName(name: string) {
@@ -39,10 +40,11 @@ export async function createEntity(data: {
   name: string;
   x?: number;
   y?: number;
-}) {
+}, diagram: Pick<Diagram, 'id'>) {
   const now = new Date();
   return await getLocalDb().entities.add({
     name: data.name,
+    diagramId: diagram.id,
     x: data.x ?? 0,
     y: data.y ?? 0,
     createdAt: now,
@@ -98,4 +100,14 @@ export async function updateEntityPosition(
     x: position.x,
     y: position.y,
   });
+}
+
+const dbmlParser = new Parser();
+
+export async function parseDbml(v: string) {
+  try {
+    return dbmlParser.parse(v, "dbml");
+  } catch (e) {
+    return undefined;
+  };
 }

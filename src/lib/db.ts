@@ -12,14 +12,16 @@ export interface Diagram extends Timestamps {
 
 export interface Entity extends Timestamps {
   id: number;
+  diagramId: string;
   name: string;
   x: number;
   y: number;
 }
 
 const entitySchema = `
-  ++id, 
-  &name, 
+  ++id,
+  diagramId, 
+  name, 
   x,
   y,
   updatedAt, 
