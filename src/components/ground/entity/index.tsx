@@ -1,12 +1,15 @@
 "use client";
 import { useEntity, useEntityFields } from "@/lib/hooks";
-import { getEntityById } from "@/lib/util";
+import { updateEntityPosition } from "@/lib/util";
 import Konva from "konva";
 import { ComponentProps, useEffect, useRef, useState } from "react";
-import { Line, Rect, Text, Group } from "react-konva";
+import { Group } from "react-konva";
 
 interface Props {
   entityId: number;
+  onMouseOver?(e: Konva.KonvaEventObject<MouseEvent>): void;
+  onMouseEnter?(e: Konva.KonvaEventObject<MouseEvent>): void;
+  onMouseLeave?(e: Konva.KonvaEventObject<MouseEvent>): void;
 }
 
 interface EntityTheme {
@@ -18,7 +21,7 @@ interface EntityTheme {
   fieldColor: string;
 }
 
-const Entity = ({ entityId }: Props) => {
+const Entity = ({ entityId, ...props }: Props) => {
   const entity = useEntity(entityId);
   const entityFields = useEntityFields(entityId);
 
@@ -126,7 +129,34 @@ const Entity = ({ entityId }: Props) => {
     }
   }, [groupRef, entity, entityFields]);
 
-  return entity && <Group x={entity.x} y={entity.y} ref={groupRef}></Group>;
+  return (
+    entity && (
+      <Group
+        x={entity.x}
+        y={entity.y}
+        ref={groupRef}
+        draggable
+        onMouseEnter={props.onMouseEnter}
+        onMouseOver={(e) => {
+          const stage = e.currentTarget.getStage();
+          if (stage) {
+            stage.container().style.cursor = "pointer";
+          }
+          props.onMouseOver && props.onMouseOver(e);
+        }}
+        onMouseLeave={(e) => {
+          const stage = e.currentTarget.getStage();
+          if (stage) {
+            stage.container().style.cursor = "default";
+          }
+          props.onMouseLeave && props.onMouseLeave(e);
+        }}
+        onDragEnd={(e) => {
+          updateEntityPosition(entity, e.currentTarget.getPosition());
+        }}
+      ></Group>
+    )
+  );
 };
 
 export default Entity;
