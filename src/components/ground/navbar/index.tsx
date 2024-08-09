@@ -1,18 +1,18 @@
 import Button from "@/components/common/button";
 import LogoMenu from "./LogoMenu";
-import ButtonLink from "@/components/common/button-link";
 import DashboardIcon from "@/components/svg/Dashboard1.svg";
+import DiagramNameChanger from "./DiagramNameChanger";
 
 interface Props {
-  projectName: string;
+  diagramId: string;
 }
 
 const NavigationBar = (props: Props) => (
   <nav className="rounded-lg flex items-center justify-between relative pt-4 p-2">
     <LogoMenu />
-    <div className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-start border-t-8 border-secondary -z-10">
-      <span className="py-2 px-4 bg-outline rounded-b outline-2 outline outline-secondary font-handwriting black-shadow bg-secondary">
-        {props.projectName}
+    <div className="absolute top-0 left-0 right-0 h-2 flex justify-center items-start bg-secondary">
+      <span className="py-2 px-4 bg-outline rounded-b outline-2 outline outline-secondary font-handwriting black-shadow bg-secondary relative z-[99999]">
+        <DiagramNameChanger id={props.diagramId} />
       </span>
     </div>
     <div className="flex items-center gap-8 font-handwriting">
