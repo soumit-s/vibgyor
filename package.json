@@ -10,13 +10,17 @@
   },
   "dependencies": {
     "@monaco-editor/react": "^4.6.0",
-    "@supabase/supabase-js": "^2.45.0",
+    "dayjs": "^1.11.12",
+    "dexie": "^4.0.8",
+    "dexie-react-hooks": "^1.1.7",
     "konva": "^9.3.14",
     "monaco-editor": "^0.50.0",
     "next": "14.2.5",
     "react": "^18",
     "react-dom": "^18",
     "react-konva": "^18.2.10",
+    "react-toastify": "^10.0.5",
+    "rxjs": "^7.8.1",
     "tailwind-merge": "^2.4.0",
     "zustand": "^4.5.4"
   },
