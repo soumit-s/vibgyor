@@ -89,3 +89,13 @@ export async function getEntityFields(entity: { id: number } | number) {
     .equals(entity instanceof Object ? entity.id : entity)
     .toArray();
 }
+
+export async function updateEntityPosition(
+  entity: number | Entity,
+  position: { x: number; y: number }
+): Promise<boolean> {
+  return !!await getLocalDb().entities.update(entity, {
+    x: position.x,
+    y: position.y,
+  });
+}
