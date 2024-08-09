@@ -1,4 +1,4 @@
-import { Entity, getLocalDb } from "../db";
+import { Diagram, Entity, getLocalDb } from "../db";
 
 export function generateSlugFromName(name: string) {
   return name.replaceAll(/[\s]*/g, "-");
@@ -28,6 +28,13 @@ export async function deleteDiagram(id: string): Promise<void> {
   await getLocalDb().diagrams.delete(id);
 }
 
+export async function updateDiagramName(
+  diagram: string | Diagram,
+  newName: string
+): Promise<boolean> {
+  return !!(await getLocalDb().diagrams.update(diagram, { name: newName }));
+}
+
 export async function createEntity(data: {
   name: string;
   x?: number;
@@ -47,7 +54,9 @@ export async function getEntityById(id: number): Promise<Entity | undefined> {
   return await getLocalDb().entities.where("id").equals(id).first();
 }
 
-export async function getEntityByName(name: string): Promise<Entity | undefined> {
+export async function getEntityByName(
+  name: string
+): Promise<Entity | undefined> {
   return await getLocalDb().entities.where("name").equals(name).first();
 }
 
