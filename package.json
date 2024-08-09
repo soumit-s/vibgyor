@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@dbml/core": "^3.6.2",
     "@monaco-editor/react": "^4.6.0",
     "dayjs": "^1.11.12",
     "dexie": "^4.0.8",
