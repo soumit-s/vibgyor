@@ -22,6 +22,7 @@ const config: Config = {
         secondary: "var(--secondary)",
         background: "var(--background)",
         foreground: "var(--foreground)",
+        "foreground-dimmed": "var(--foreground-dimmed)",
         outline: "var(--outline)",
       },
     },
