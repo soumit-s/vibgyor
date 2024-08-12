@@ -2,6 +2,7 @@ import Button from "@/components/common/button";
 import LogoMenu from "./LogoMenu";
 import DashboardIcon from "@/components/svg/Dashboard1.svg";
 import DiagramNameChanger from "./DiagramNameChanger";
+import GroundActionPanel from "../action-panel";
 
 interface Props {
   diagramId: string;
@@ -9,9 +10,12 @@ interface Props {
 
 const NavigationBar = (props: Props) => (
   <nav className="rounded-lg flex items-center justify-between relative pt-4 px-8">
-    <LogoMenu />
+    <div className="flex gap-8">
+      <LogoMenu />
+      <GroundActionPanel />
+    </div>
     <div className="absolute top-0 left-0 right-0 h-2 flex justify-center items-start bg-secondary">
-      <span className="py-2 px-4 bg-outline rounded-b outline-2 outline outline-secondary font-handwriting black-shadow bg-secondary relative z-[99999]">
+      <span className="py-2 px-4 rounded-b outline-2 outline outline-secondary font-handwriting black-shadow bg-secondary relative z-[99999]">
         <DiagramNameChanger id={props.diagramId} />
       </span>
     </div>
