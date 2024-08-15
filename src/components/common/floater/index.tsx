@@ -11,7 +11,7 @@ interface Props {
 const Floater = ({ title, trigger, floater }: Props) => {
   const [active, setActive] = useState(false);
   return (
-    <div className="relative">
+    <div className="relative z-10">
       <div onClick={() => setActive(true)}>{trigger}</div>
       {active && (
         <div className="bg-primary border border-outline rounded-lg absolute top-[calc(100%+1em)] black-shadow">
