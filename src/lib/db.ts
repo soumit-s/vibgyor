@@ -28,8 +28,7 @@ const entitySchema = `
   createdAt
 `;
 
-export interface Field extends Timestamps {
-  id: number;
+export interface Field {
   entityId: number;
   name: string;
   type: string;
@@ -39,15 +38,11 @@ export interface Field extends Timestamps {
 }
 
 const fieldSchema = `
-  ++id, 
-  name, 
-  entityId, 
+  [entityId+name],
   type, 
   isPrimaryKey, 
   isNotNull, 
-  isUnique, 
-  updatedAt, 
-  createdAt
+  isUnique
 `;
 
 export interface Relations extends Timestamps {
@@ -60,11 +55,11 @@ export interface Relations extends Timestamps {
 export type Database = Dexie & {
   diagrams: EntityTable<Diagram, "id">;
   entities: EntityTable<Entity, "id">;
-  fields: EntityTable<Field, "id">;
-  relations: EntityTable<Field, "id">;
+  fields: EntityTable<Field>;
+  relations: EntityTable<Relations, "id">;
 };
 
-Dexie.delete("local-db");
+// Dexie.delete("local-db"); 
 
 const db = new Dexie("local-db") as Database;
 
