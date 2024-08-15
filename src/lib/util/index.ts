@@ -12,6 +12,7 @@ export async function createDiagram(data: { name: string }): Promise<string> {
   return await getLocalDb().diagrams.add({
     id,
     name,
+    code: "",
     createdAt: createdAt,
     updatedAt: createdAt,
   });
@@ -42,6 +43,13 @@ export async function updateDiagramName(
   newName: string
 ): Promise<boolean> {
   return !!(await getLocalDb().diagrams.update(diagram, { name: newName }));
+}
+
+export async function updateDiagramCode(
+  diagram: string | Diagram,
+  code: string,
+): Promise<boolean> {
+  return !!(await getLocalDb().diagrams.update(diagram, { code }));
 }
 
 export async function createEntity(

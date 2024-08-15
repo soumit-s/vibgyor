@@ -8,6 +8,7 @@ export interface Timestamps {
 export interface Diagram extends Timestamps {
   id: string;
   name: string;
+  code: string;
 }
 
 export interface Entity extends Timestamps {
@@ -66,7 +67,7 @@ export type Database = Dexie & {
 const db = new Dexie("local-db") as Database;
 
 db.version(1).stores({
-  diagrams: "++id, name, updatedAt, createdAt",
+  diagrams: "++id, name, code, updatedAt, createdAt",
   entities: entitySchema,
   fields: fieldSchema,
   relations: "++id, type, updatedAt, createdAt",
