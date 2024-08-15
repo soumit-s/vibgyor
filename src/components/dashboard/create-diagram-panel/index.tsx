@@ -3,7 +3,7 @@
 import Button from "@/components/common/button";
 import TextBox from "@/components/common/txtbox";
 import { createDiagram, isDiagramExistsByName } from "@/lib/util";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 const CreateDiagramPanel = () => {
@@ -11,7 +11,8 @@ const CreateDiagramPanel = () => {
   const [creating, setCreating] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const handleCreate = () => {
+  const handleSubmit: React.FormEventHandler = (e) => {
+    e.preventDefault();
     setCreating(true);
     // (async () => {throw new Error("")})()
     createDiagram({ name: diagramName })
@@ -46,7 +47,7 @@ const CreateDiagramPanel = () => {
   }, [diagramName]);
 
   return (
-    <div className="p-4">
+    <form className="p-4" onSubmit={handleSubmit}>
       <TextBox
         value={diagramName}
         placeholder="Diagram Name"
@@ -56,6 +57,7 @@ const CreateDiagramPanel = () => {
         msgType={errorMsg ? "error" : undefined}
       />
       <Button
+        type="submit"
         variant="filled"
         state={
           creating
@@ -63,11 +65,11 @@ const CreateDiagramPanel = () => {
             : (diagramName.length != 0 && !errorMsg && "enabled") || "disabled"
         }
         className="font-common mt-4"
-        onClick={() => !creating && handleCreate()}
+        onClick={(e) => creating && e.preventDefault()}
       >
         {creating ? <div>Creating</div> : "Create"}
       </Button>
-    </div>
+    </form>
   );
 };
 
