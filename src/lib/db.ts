@@ -31,6 +31,7 @@ const entitySchema = `
 export interface Field {
   entityId: number;
   name: string;
+  idx: number;
   type: string;
   isPrimaryKey: boolean;
   isNotNull: boolean;
@@ -39,6 +40,7 @@ export interface Field {
 
 const fieldSchema = `
   [entityId+name],
+  idx,
   type, 
   isPrimaryKey, 
   isNotNull, 
