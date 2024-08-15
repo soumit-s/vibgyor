@@ -14,8 +14,11 @@ export const useDiagramById = (id: string) =>
     [id]
   );
 
-export const useEntites = () => {
-  return useLiveQuery(() => getLocalDb().entities.toArray());
+export const useEntites = (diagramId: string) => {
+  return useLiveQuery(
+    () => getLocalDb().entities.where("diagramId").equals(diagramId).toArray(),
+    [diagramId]
+  );
 };
 
 export const useEntity = (entity: number | { id: number }) => {
