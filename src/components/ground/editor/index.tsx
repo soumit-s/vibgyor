@@ -3,10 +3,11 @@ import { editor } from "monaco-editor";
 import EditorIcon from "@/components/svg/Markup1.svg";
 
 interface EditorProps {
+  value: string,
   onChange?(content: string | undefined): void;
 }
 
-const Editor = ({ onChange }: EditorProps) => {
+const Editor = ({ onChange, value }: EditorProps) => {
   const handleEditorBeforeMount = (monaco: Monaco) => setupEditor(monaco);
 
   return (
@@ -20,6 +21,7 @@ const Editor = ({ onChange }: EditorProps) => {
         beforeMount={handleEditorBeforeMount}
         options={editorOptions}
         onChange={onChange}
+        value={value}
       ></MonacoEditor>
     </div>
   );
