@@ -80,6 +80,7 @@ export async function getEntityByName(
 export async function createEntityField(
   data: {
     name: string;
+    idx: number;
     type: string;
     isUnique?: boolean;
     isPrimaryKey?: boolean;
@@ -89,6 +90,7 @@ export async function createEntityField(
 ) {
   return await getLocalDb().fields.add({
     name: data.name,
+    idx: data.idx,
     entityId: entity instanceof Object ? entity.id : entity,
     type: data.type,
     isUnique: data.isUnique ?? false,
@@ -168,18 +170,21 @@ export async function syncDiagramDataWithEditorSchema(
       { name: table.name, x: 600, y: 300 },
       { id: diagramId }
     );
+    let idx = 0;
     for (const field of table.fields) {
       await createEntityField(
-        { name: field.name, type: field.type.type_name },
+        { idx, name: field.name, type: field.type.type_name },
         { id: entityId }
       );
+      idx++;
     }
   }
 
   for (const data of updatedTableData) {
     const entityId = currentEntityNameToEntityIdMap.get(data.name)!;
-    const updatedFields = data.fields.map((f) => {
+    const updatedFields = data.fields.map((f, idx) => {
       return {
+        idx,
         entityId,
         name: f.name,
         type: f.type.type_name,
