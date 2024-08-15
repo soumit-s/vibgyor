@@ -41,5 +41,5 @@ export const useEntityFields = (entity: number | { id: number }) => {
         .toArray(),
     [entity],
     []
-  );
+  )?.sort((a, b) => a.idx - b.idx);
 };
