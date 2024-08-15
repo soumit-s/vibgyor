@@ -2,7 +2,11 @@ import { Monaco, Editor as MonacoEditor } from "@monaco-editor/react";
 import { editor } from "monaco-editor";
 import EditorIcon from "@/components/svg/Markup1.svg";
 
-const Editor = () => {
+interface EditorProps {
+  onChange?(content: string | undefined): void;
+}
+
+const Editor = ({ onChange }: EditorProps) => {
   const handleEditorBeforeMount = (monaco: Monaco) => setupEditor(monaco);
 
   return (
@@ -15,6 +19,7 @@ const Editor = () => {
         theme="OneDarkPro"
         beforeMount={handleEditorBeforeMount}
         options={editorOptions}
+        onChange={onChange}
       ></MonacoEditor>
     </div>
   );
