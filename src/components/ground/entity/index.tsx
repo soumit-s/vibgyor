@@ -155,7 +155,9 @@ const Entity = ({ entityId, ...props }: Props) => {
 
       updateFieldGroup(fg, field);
       fieldY += 2 * 5 + fg.name.getHeight();
-      const finalWidth = fg.type.getPosition().x + fg.type.getWidth() + 10; // +10 for padding.
+      
+      // + 40 for total x-padding 
+      const finalWidth = fg.name.getWidth() + fg.type.getWidth() + 40;
       maxFieldWidth = maxFieldWidth < finalWidth ? finalWidth : maxFieldWidth;
     });
 
