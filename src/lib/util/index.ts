@@ -47,7 +47,7 @@ export async function updateDiagramName(
 
 export async function updateDiagramCode(
   diagram: string | Diagram,
-  code: string,
+  code: string
 ): Promise<boolean> {
   return !!(await getLocalDb().diagrams.update(diagram, { code }));
 }
@@ -130,6 +130,7 @@ export async function parseDbml(v: string) {
   try {
     return dbmlParser.parse(v, "dbml");
   } catch (e) {
+    // console.error(e);
     return undefined;
   }
 }
@@ -139,68 +140,69 @@ export async function syncDiagramDataWithEditorSchema(
   dbData: ReturnType<typeof dbmlParser.parse>
 ) {
   const db = getLocalDb();
-  const entites = await getEntites();
-  const schema = dbData.findOrCreateSchema("public");
+  await db.transaction("rw", db.entities, 'fields', async () => {
+    const entites = await getEntites();
+    const schema = dbData.findOrCreateSchema("public");
 
-  const currentEntityNameToEntityIdMap = entites.reduce(
-    (map, e) => map.set(e.name, e.id),
-    new Map<string, number>()
-  );
-  const allTableIds = entites.reduce(
-    (arr, entity) => arr.add(entity.id),
-    new Set<number>()
-  );
-  const updatedTableIds = new Array<number>();
-  const updatedTableData = new Array<(typeof schema.tables)[0]>();
-  const newTables = schema.tables.reduce((set, v) => {
-    const id = currentEntityNameToEntityIdMap.get(v.name);
-    if (id) {
-      updatedTableData.push(v);
-      updatedTableIds.push(id);
-      allTableIds.delete(id);
-    } else set.push(v);
-    return set;
-  }, new Array<(typeof schema.tables)[0]>());
-
-  // Takes care of deleted tables.
-  const deletedTableIds = Array.from(allTableIds);
-  await db.entities.bulkDelete(Array.from(deletedTableIds));
-  await db.fields
-    .where("entityId")
-    .equals(Array.from(deletedTableIds))
-    .delete();
-
-  console.log(updatedTableData);
-
-  // Takes care of the new tables.
-  for (const table of newTables) {
-    const entityId = await createEntity(
-      { name: table.name, x: 600, y: 300 },
-      { id: diagramId }
+    const currentEntityNameToEntityIdMap = entites.reduce(
+      (map, e) => map.set(e.name, e.id),
+      new Map<string, number>()
     );
-    let idx = 0;
-    for (const field of table.fields) {
-      await createEntityField(
-        { idx, name: field.name, type: field.type.type_name },
-        { id: entityId }
-      );
-      idx++;
-    }
-  }
+    const allTableIds = entites.reduce(
+      (arr, entity) => arr.add(entity.id),
+      new Set<number>()
+    );
+    const updatedTableIds = new Array<number>();
+    const updatedTableData = new Array<(typeof schema.tables)[0]>();
+    const newTables = schema.tables.reduce((set, v) => {
+      const id = currentEntityNameToEntityIdMap.get(v.name);
+      if (id) {
+        updatedTableData.push(v);
+        updatedTableIds.push(id);
+        allTableIds.delete(id);
+      } else set.push(v);
+      return set;
+    }, new Array<(typeof schema.tables)[0]>());
 
-  for (const data of updatedTableData) {
-    const entityId = currentEntityNameToEntityIdMap.get(data.name)!;
-    const updatedFields = data.fields.map((f, idx) => {
-      return {
-        idx,
-        entityId,
-        name: f.name,
-        type: f.type.type_name,
-        isPrimaryKey: f.pk,
-        isNotNull: f.not_null,
-        isUnique: f.unique,
-      };
-    });
-    await getLocalDb().fields.bulkPut(updatedFields);
-  }
+    // Takes care of deleted tables.
+    const deletedTableIds = Array.from(allTableIds);
+    await db.entities.bulkDelete(Array.from(deletedTableIds));
+    await db.fields
+      .where("entityId")
+      .equals(Array.from(deletedTableIds))
+      .delete();
+
+    // Takes care of the new tables.
+    for (const table of newTables) {
+      const entityId = await createEntity(
+        { name: table.name, x: 600, y: 300 },
+        { id: diagramId }
+      );
+      let idx = 0;
+      for (const field of table.fields) {
+        await createEntityField(
+          { idx, name: field.name, type: field.type.type_name },
+          { id: entityId }
+        );
+        idx++;
+      }
+    }
+
+    // Take care of updated data.
+    for (const data of updatedTableData) {
+      const entityId = currentEntityNameToEntityIdMap.get(data.name)!;
+      const updatedFields = data.fields.map((f, idx) => {
+        return {
+          idx,
+          entityId,
+          name: f.name,
+          type: f.type.type_name,
+          isPrimaryKey: f.pk,
+          isNotNull: f.not_null,
+          isUnique: f.unique,
+        };
+      });
+      await getLocalDb().fields.bulkPut(updatedFields);
+    }
+  });
 }
