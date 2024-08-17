@@ -1,8 +1,15 @@
 "use client";
+import { Field } from "@/lib/db";
 import { useEntity, useEntityFields } from "@/lib/hooks";
 import { updateEntityPosition } from "@/lib/util";
 import Konva from "konva";
-import { ComponentProps, useEffect, useRef, useState } from "react";
+import {
+  ComponentProps,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { Group } from "react-konva";
 
 interface Props {
@@ -22,11 +29,9 @@ interface EntityTheme {
 }
 
 const Entity = ({ entityId, ...props }: Props) => {
+  const entityWidth = 200;
   const entity = useEntity(entityId);
   const entityFields = useEntityFields(entityId);
-
-  // Reference to the entity name element.
-  const groupRef: ComponentProps<typeof Group>["ref"] = useRef(null);
 
   const theme: EntityTheme = {
     paddingX: 5,
@@ -37,97 +42,146 @@ const Entity = ({ entityId, ...props }: Props) => {
     fieldColor: "#b6c9c2",
   };
 
-  useEffect(() => {
-    if (groupRef.current && entity) {
-      const entityWidth = 200;
-      const group = groupRef.current;
+  type Fg = { grp: Konva.Group; name: Konva.Text; type: Konva.Text };
 
-      const nameEl = new Konva.Text({
-        text: entity?.name,
-        fill: theme.entityNameColor,
-        x: 10,
-        y: 10,
-        fontFamily: theme.fontFamily,
-        fontSize: theme.fontSize,
-      });
+  const createEntityNameElements = () => {
+    const nameEl = new Konva.Text({
+      text: entity?.name,
+      fill: theme.entityNameColor,
+      x: 10,
+      y: 10,
+      fontFamily: theme.fontFamily,
+      fontSize: theme.fontSize,
+    });
 
-      const entityNameRect = new Konva.Rect({
-        width: entityWidth,
-        height: nameEl.getHeight() + 2 * 10,
-        fill: "#212b26", //"#0b0f0d",
-        cornerRadius: [8, 8, 0, 0],
-        stroke: "#212b26",
-        strokeWidth: 2,
-      });
+    const entityNameRect = new Konva.Rect({
+      width: entityWidth,
+      height: nameEl.getHeight() + 2 * 10,
+      fill: "#212b26", //"#0b0f0d",
+      cornerRadius: [8, 8, 0, 0],
+      stroke: "#212b26",
+      strokeWidth: 2,
+    });
 
-      const fieldsRect = new Konva.Rect({
-        x: 0,
-        y: nameEl.getHeight() + 2 * 10,
-        width: entityWidth,
-        height: 120,
-        stroke: "#212b26",
-        fill: "#0b0f0d",
-        cornerRadius: [0, 0, 10, 10],
-      });
+    return { text: nameEl, rect: entityNameRect };
+  };
 
-      let fieldY = fieldsRect.getPosition().y + 5;
-      let maxFieldWidth = entityWidth;
-      const elements = entityFields
-        .map((field) => {
-          const fieldName = new Konva.Text({
-            x: 10,
-            y: fieldY + 5,
-            text: field.name,
-            fill: theme.fieldColor,
-            fontFamily: theme.fontFamily,
-            fontSize: theme.fontSize,
-          });
-          const fieldType = new Konva.Text({
-            x: fieldName.getPosition().x + fieldName.getWidth() + 10,
-            y: fieldY + 5,
-            text: field.type,
-            fill: theme.fieldColor,
-            fontFamily: theme.fontFamily,
-            fontSize: theme.fontSize,
-          });
-          fieldY += 2 * 5 + fieldName.getHeight();
-          const finalWidth =
-            fieldType.getPosition().x + fieldType.getWidth() + 10; // +10 for padding.
-          maxFieldWidth =
-            maxFieldWidth < finalWidth ? finalWidth : maxFieldWidth;
-          return { fieldName, fieldType };
-        })
-        .map(({ fieldName, fieldType }) => {
-          const fieldGroup = new Konva.Group({ x: 0, fieldY });
+  function createFieldsSection() {
+    const rect = new Konva.Rect({
+      x: 0,
+      y: 0,
+      width: entityWidth,
+      height: 120,
+      stroke: "#212b26",
+      fill: "#0b0f0d",
+      cornerRadius: [0, 0, 10, 10],
+    });
+    const grp = new Konva.Group();
+    grp.add(rect);
+    return { grp, rect };
+  }
 
-          // Left align the field type.
-          fieldType.setPosition({
-            x: maxFieldWidth - 10 - fieldType.getWidth(),
-            y: fieldType.getPosition().y,
-          });
+  function createNewFieldGroup(fieldY: number): Fg {
+    const name = new Konva.Text({
+      x: 10,
+      y: 5,
+      text: "",
+      fill: theme.fieldColor,
+      fontFamily: theme.fontFamily,
+      fontSize: theme.fontSize,
+    });
+    const type = new Konva.Text({
+      x: name.getPosition().x + name.getWidth() + 10,
+      y: 5,
+      text: "",
+      fill: theme.fieldColor,
+      fontFamily: theme.fontFamily,
+      fontSize: theme.fontSize,
+    });
+    const grp = new Konva.Group({ x: 0, y: fieldY });
+    grp.add(name, type);
+    return { grp, name, type };
+  }
 
-          fieldGroup.add(fieldName, fieldType);
-          return fieldGroup;
-        });
+  function updateFieldGroup(fg: Fg, field: Field) {
+    fg.name.setText(field.name);
+    fg.type.setText(field.type);
+  }
 
-      // Set the height of the field rect using the final value of
-      // fieldY. Also, takes into account the padding.
-      fieldsRect.setSize({
-        width: entityWidth,
-        height: fieldY - fieldsRect.getPosition().y + 5,
-      });
+  const self = useRef({
+    entityNameElements: createEntityNameElements(),
+    fieldsSection: createFieldsSection(),
+    fieldGroups: [] as Fg[],
+  });
 
-      group.add(entityNameRect);
-      group.add(nameEl);
-      group.add(fieldsRect);
-      group.add(...elements);
-      // group.add(nameFieldDivider);
-
-      return () => {
-        group.removeChildren();
-      };
+  const groupRef = useCallback((group: Konva.Group) => {
+    if (group) {
+      group.add(self.current.entityNameElements.rect);
+      group.add(self.current.entityNameElements.text);
+      group.add(self.current.fieldsSection.grp);
     }
-  }, [groupRef, entity, entityFields]);
+  }, []);
+
+  useEffect(() => {
+    // Update entity name if there is any changes in the entity name.
+    const { entityNameElements, fieldsSection } = self.current;
+    if (!entity) return;
+    if (entity.name != (entityNameElements.text.text as unknown as string))
+      entityNameElements.text.setText(entity.name);
+    fieldsSection.grp.setPosition({
+      x: 0,
+      y: entityNameElements.rect.getSize().height,
+    });
+  }, [entity]);
+
+  useEffect(() => {
+    if (!entity) {
+      return;
+    }
+    const { fieldGroups, fieldsSection } = self.current;
+    let fieldY = 5;
+    let maxFieldWidth = entityWidth;
+
+    entityFields.forEach((field, idx) => {
+      const fg =
+        fieldGroups.length > idx
+          ? fieldGroups[idx]
+          : createNewFieldGroup(fieldY);
+
+      if (fieldGroups.length <= idx) {
+        fieldGroups.push(fg);
+        fieldsSection.grp.add(fg.grp);
+      }
+
+      updateFieldGroup(fg, field);
+      fieldY += 2 * 5 + fg.name.getHeight();
+      const finalWidth = fg.type.getPosition().x + fg.type.getWidth() + 10; // +10 for padding.
+      maxFieldWidth = maxFieldWidth < finalWidth ? finalWidth : maxFieldWidth;
+    });
+
+    for (const fg of fieldGroups) {
+      // Left align the field type.
+      fg.type.setPosition({
+        x: maxFieldWidth - 10 - fg.type.getWidth(),
+        y: fg.type.getPosition().y,
+      });
+    }
+
+    for (let i = 0; i < fieldGroups.length; ++i) {
+      if (i < entityFields.length) {
+        fieldGroups[i].grp.show();
+      } else {
+        fieldGroups[i].grp.hide();
+      }
+    }
+
+    // Set the height of the field rect using the final value of
+    // fieldY. Also, takes into account the padding.
+    fieldsSection.rect.setSize({
+      width: entityWidth,
+      height: fieldY + 5,
+    });
+  }, [entityFields]);
 
   return (
     entity && (
